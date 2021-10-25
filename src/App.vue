@@ -69,6 +69,18 @@
         </ais-clear-refinements>
         <h2>Brands</h2>
         <ais-refinement-list attribute="brand" searchable />
+        <h2>Price</h2>
+        <ais-range-input attribute="price">
+          <template v-slot="{ currentRefinement, range, refine }">
+            <vue-slider
+              :min="range.min"
+              :max="range.max"
+              :lazy="true"
+              :value="toValue(currentRefinement, range)"
+              @change="refine({ min: $event[0], max: $event[1] })"
+            />
+          </template>
+        </ais-range-input>
         <ais-configure :hitsPerPage="8" />
       </div>
       <div class="right-panel">
@@ -107,11 +119,17 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import VueSlider from 'vue-slider-component'
+
 import algoliasearch from 'algoliasearch/lite'
 import 'instantsearch.css/themes/satellite-min.css'
+import 'vue-slider-component/theme/antd.css'
 
 export default Vue.extend({
   name: 'App',
+  components: {
+    VueSlider
+  },
   data () {
     return {
       searchClient: algoliasearch(
@@ -120,6 +138,14 @@ export default Vue.extend({
       ),
       focus: false,
       focusIn: false
+    }
+  },
+  methods: {
+    toValue (value: any, range: any) {
+      return [
+        value.min ? value.min : range.min,
+        value.max ? value.max : range.max
+      ]
     }
   }
 })
